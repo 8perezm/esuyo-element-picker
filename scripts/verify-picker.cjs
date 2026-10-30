@@ -78,12 +78,15 @@ function check(name, cond, extra = "") {
   check("payload has ancestors", payload && payload.target.ancestors.length > 0);
   check("payload url is test page", payload && payload.page.url.includes("test-page.html"), payload && payload.page.url);
   const paste = await ev("window.__esuyoPicker.pasteText()");
-  check("paste text starts with marker", typeof paste === "string" && paste.startsWith("@picked-element v2"));
-  check("paste contains selector+fullPath", paste.includes("selector:") && paste.includes("fullPath:"));
+  check("paste text starts with marker", typeof paste === "string" && paste.startsWith("@picked-element v3"));
+  check("hooked paste has selector+state", paste.includes("selector:") && paste.includes("state:"));
+  check("hooked paste drops fullPath", !paste.includes("fullPath:"));
+  check("hooked paste drops ancestors/nearby", !paste.includes("ancestors:") && !paste.includes("nearby:"));
+  check("hooked paste drops attrs/styles/rect", !paste.includes("attrs:") && !paste.includes("styles:") && !paste.includes("rect:"));
+  check("hooked paste keeps html", paste.includes("html:"));
   check("paste has viewport+scroll", paste.includes("viewport:") && paste.includes("scroll="), paste.split("\n")[3]);
   check("paste marks top-level frame", paste.includes("frame: top-level"));
-  check("paste reports data-ref hook", paste.includes('hook: data-ref="report-title"'));
-  check("paste reports visible state", paste.includes("visible=true"));
+  check("payload reports data-ref hook", payload && payload.target.hook.has === true && payload.target.hook.value === "report-title");
 
   // Second pick: hookless h1 must report no stable hook + structural selector.
   // (first toggle clears the previous lock, second re-arms picking mode)
@@ -97,7 +100,7 @@ function check(name, cond, extra = "") {
   const payload2 = JSON.parse(await ev("JSON.stringify(window.__esuyoPicker.lastPayload())"));
   check("hookless h1 reports no hook", payload2 && payload2.target.hook.has === false);
   const paste2 = await ev("window.__esuyoPicker.pasteText()");
-  check("hookless paste suggests data-ref", paste2.includes("hook: none — consider adding data-ref"));
+  check("hookless paste keeps full context", paste2.includes("fullPath:") && paste2.includes("nearby:") && paste2.includes("hook: none"));
   check("hookless selector is structural", payload2 && !/data-ref|data-testid|#/.test(payload2.target.selector), payload2 && payload2.target.selector);
   for (const type of ["keyDown", "keyUp"]) {
     await s.call("Input.dispatchKeyEvent", { type, key: "Escape", code: "Escape", windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });

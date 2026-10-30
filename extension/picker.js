@@ -212,26 +212,35 @@
 
   function toPasteText(p) {
     const t = p.target;
-    const lines = [
-      "@picked-element v2",
+    const head = [
+      "@picked-element v3",
       `url: ${p.page.url}`,
       `title: ${p.page.title}`,
       `viewport: ${p.page.viewport.w}x${p.page.viewport.h} dpr=${p.page.viewport.dpr} scroll=${p.page.scroll.x},${p.page.scroll.y}`,
       `frame: ${t.frame.framed ? "framed frameUrl=" + (t.frame.frameUrl || "cross-origin") : "top-level"}`,
       `selector: ${t.selector}`,
+      `tag: ${t.tag}  text: ${JSON.stringify(t.text)}`,
+      `state: visible=${t.state.visible} enabled=${t.state.enabled}`
+    ];
+    if (t.hook.has) {
+      // Stable hook: fallback locators are dead weight — lean paste.
+      return head.concat([
+        `html: ${t.html}`,
+        `capturedAt: ${p.capturedAt}`
+      ]).join("\n");
+    }
+    // No hook: full context so the agent can still locate it.
+    return head.concat([
+      `hook: none — consider adding data-ref`,
       `fullPath: ${t.fullPath}`,
       `ancestors: ${t.ancestors}`,
-      `tag: ${t.tag}  text: ${JSON.stringify(t.text)}`,
-      `hook: ${t.hook.has ? t.hook.kind + "=" + JSON.stringify(t.hook.value) : "none — consider adding data-ref"}`,
-      `state: visible=${t.state.visible} enabled=${t.state.enabled}`,
       `attrs: ${JSON.stringify(t.attributes)}`,
       `styles: ${JSON.stringify(t.styles)}`,
       `rect: ${t.rect.x},${t.rect.y} ${t.rect.w}x${t.rect.h}`,
       `nearby: ${JSON.stringify(t.nearby)}`,
       `html: ${t.html}`,
       `capturedAt: ${p.capturedAt}`
-    ];
-    return lines.join("\n");
+    ]).join("\n");
   }
 
   function ensureOverlay() {

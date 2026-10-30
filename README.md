@@ -24,12 +24,9 @@ quarterly analysis'".
 
 ## The paste
 
-`@picked-element v2` — sanitized url, viewport + scroll, frame context
-(top-level vs framed), unique selector (prefers `data-ref`/`data-testid`),
-explicit hook line (`none — consider adding data-ref` when hookless),
-visible/enabled state, structural `fullPath` fallback, ancestors, tag + text,
-safelisted attrs (secrets redacted), style subset, rect, nearby text, capped
-HTML, timestamp. Full field list in [`extension/README.md`](extension/README.md).
+`@picked-element v3` — two-tier: lean when the element has a `data-ref`
+(url, viewport, frame, selector, tag + text, state, HTML), full fallback
+context when hookless. Full field list in [`extension/README.md`](extension/README.md).
 
 `@retrofit-data-ref v1 (whole page)` — whole-page prompt for the agent to add
 missing `data-ref` hooks (kebab, feature-scoped, selection-only). Available
