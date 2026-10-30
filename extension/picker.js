@@ -150,13 +150,52 @@
     return texts;
   }
 
+  function frameContext() {
+    // Top-level pages: not framed. Same-origin iframes: include frame url.
+    // Cross-origin iframes: url access throws — report framed:true, url:null.
+    try {
+      if (window.self === window.top) return { framed: false, frameUrl: null };
+      return { framed: true, frameUrl: sanitizeUrl(window.self.location.href) || null };
+    } catch {
+      return { framed: true, frameUrl: null };
+    }
+  }
+
+  function stableHook(el) {
+    const ref = el.getAttribute && (el.getAttribute("data-ref") || el.getAttribute("data-testid"));
+    if (ref) return { has: true, kind: el.hasAttribute("data-ref") ? "data-ref" : "data-testid", value: ref };
+    if (el.id) return { has: true, kind: "id", value: el.id };
+    return { has: false, kind: null, value: null };
+  }
+
+  function visibility(el) {
+    let visible = true;
+    try {
+      const cs = getComputedStyle(el);
+      const r = el.getBoundingClientRect();
+      visible = cs.display !== "none" && cs.visibility !== "hidden" && cs.opacity !== "0" &&
+        r.width > 0 && r.height > 0;
+    } catch { visible = false; }
+    const enabled = !("disabled" in el) || el.disabled === false;
+    return { visible, enabled };
+  }
+
   function buildPayload(el) {
     const rect = el.getBoundingClientRect();
+    const hook = stableHook(el);
     return {
-      v: 1,
-      page: { url: sanitizeUrl(location.href), title: clamp(document.title, 200) },
+      v: 2,
+      page: {
+        url: sanitizeUrl(location.href),
+        title: clamp(document.title, 200),
+        viewport: { w: window.innerWidth, h: window.innerHeight, dpr: window.devicePixelRatio || 1 },
+        scroll: { x: Math.round(window.scrollX || 0), y: Math.round(window.scrollY || 0) }
+      },
       target: {
         tag: el.tagName.toLowerCase(),
+        frame: frameContext(),
+        hook,
+        state: visibility(el),
         selector: uniqueSelector(el),
         fullPath: fullPath(el),
         ancestors: ancestorBreadcrumb(el),
@@ -174,13 +213,17 @@
   function toPasteText(p) {
     const t = p.target;
     const lines = [
-      "@picked-element v1",
+      "@picked-element v2",
       `url: ${p.page.url}`,
       `title: ${p.page.title}`,
+      `viewport: ${p.page.viewport.w}x${p.page.viewport.h} dpr=${p.page.viewport.dpr} scroll=${p.page.scroll.x},${p.page.scroll.y}`,
+      `frame: ${t.frame.framed ? "framed frameUrl=" + (t.frame.frameUrl || "cross-origin") : "top-level"}`,
       `selector: ${t.selector}`,
       `fullPath: ${t.fullPath}`,
       `ancestors: ${t.ancestors}`,
       `tag: ${t.tag}  text: ${JSON.stringify(t.text)}`,
+      `hook: ${t.hook.has ? t.hook.kind + "=" + JSON.stringify(t.hook.value) : "none — consider adding data-ref"}`,
+      `state: visible=${t.state.visible} enabled=${t.state.enabled}`,
       `attrs: ${JSON.stringify(t.attributes)}`,
       `styles: ${JSON.stringify(t.styles)}`,
       `rect: ${t.rect.x},${t.rect.y} ${t.rect.w}x${t.rect.h}`,

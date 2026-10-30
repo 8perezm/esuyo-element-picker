@@ -78,10 +78,27 @@ function check(name, cond, extra = "") {
   check("payload has ancestors", payload && payload.target.ancestors.length > 0);
   check("payload url is test page", payload && payload.page.url.includes("test-page.html"), payload && payload.page.url);
   const paste = await ev("window.__esuyoPicker.pasteText()");
-  check("paste text starts with marker", typeof paste === "string" && paste.startsWith("@picked-element v1"));
+  check("paste text starts with marker", typeof paste === "string" && paste.startsWith("@picked-element v2"));
   check("paste contains selector+fullPath", paste.includes("selector:") && paste.includes("fullPath:"));
+  check("paste has viewport+scroll", paste.includes("viewport:") && paste.includes("scroll="), paste.split("\n")[3]);
+  check("paste marks top-level frame", paste.includes("frame: top-level"));
+  check("paste reports data-ref hook", paste.includes('hook: data-ref="report-title"'));
+  check("paste reports visible state", paste.includes("visible=true"));
 
-  // Esc clears (trusted key events).
+  // Second pick: hookless h1 must report no stable hook + structural selector.
+  // (first toggle clears the previous lock, second re-arms picking mode)
+  await ev("window.__esuyoPicker.toggle()");
+  await ev("window.__esuyoPicker.toggle()");
+  const box2 = JSON.parse(await ev(`JSON.stringify((() => { const els = Array.from(document.querySelectorAll('main h1')); const r = els[0].getBoundingClientRect(); return {x: r.left + r.width/2, y: r.top + r.height/2}; })())`));
+  await s.call("Input.dispatchMouseEvent", { type: "mouseMoved", x: box2.x, y: box2.y });
+  await s.call("Input.dispatchMouseEvent", { type: "mousePressed", x: box2.x, y: box2.y, button: "left", clickCount: 1 });
+  await s.call("Input.dispatchMouseEvent", { type: "mouseReleased", x: box2.x, y: box2.y, button: "left", clickCount: 1 });
+  await new Promise((r) => setTimeout(r, 600));
+  const payload2 = JSON.parse(await ev("JSON.stringify(window.__esuyoPicker.lastPayload())"));
+  check("hookless h1 reports no hook", payload2 && payload2.target.hook.has === false);
+  const paste2 = await ev("window.__esuyoPicker.pasteText()");
+  check("hookless paste suggests data-ref", paste2.includes("hook: none — consider adding data-ref"));
+  check("hookless selector is structural", payload2 && !/data-ref|data-testid|#/.test(payload2.target.selector), payload2 && payload2.target.selector);
   for (const type of ["keyDown", "keyUp"]) {
     await s.call("Input.dispatchKeyEvent", { type, key: "Escape", code: "Escape", windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
   }

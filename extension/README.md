@@ -35,11 +35,14 @@ offer the same actions when loaded as an extension.
 
 ## Paste contracts (text-only, remote-safe)
 
-`@picked-element v1`: sanitized url (query/hash stripped, http/https/file/
-about:blank only), title, unique `selector` (prefers `data-ref`/`data-testid`,
-then `#id`, else structural), `fullPath` fallback, ancestor breadcrumb,
-tag+text, safelisted attrs (secrets redacted), computed-style subset,
-viewport rect, nearby text, capped `html` (~4k), timestamp.
+`@picked-element v2`: sanitized url (query/hash stripped, http/https/file/
+about:blank only), title, viewport + scroll, frame context (top-level vs
+framed + frame url, cross-origin safe), unique `selector` (prefers `data-ref`/
+`data-testid`, then `#id`, else structural), explicit `hook` line (`none —
+consider adding data-ref` when hookless), `state` (visible/enabled),
+`fullPath` fallback, ancestor breadcrumb, tag+text, safelisted attrs (secrets
+redacted), computed-style subset, viewport rect, nearby text, capped `html`
+(~4k), timestamp.
 
 `@retrofit-data-ref v1`: whole-page hook request — url, title, element
 counts, plus the rules (kebab, feature-scoped, unique; selection-only).
