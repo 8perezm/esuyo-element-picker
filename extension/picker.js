@@ -213,7 +213,7 @@
   function toPasteText(p) {
     const t = p.target;
     const head = [
-      "@picked-element v3",
+      "@picked-element v4",
       `url: ${p.page.url}`,
       `title: ${p.page.title}`,
       `viewport: ${p.page.viewport.w}x${p.page.viewport.h} dpr=${p.page.viewport.dpr} scroll=${p.page.scroll.x},${p.page.scroll.y}`,
@@ -225,11 +225,11 @@
     if (t.hook.has) {
       // Stable hook: fallback locators are dead weight — lean paste.
       return head.concat([
-        `html: ${t.html}`,
         `capturedAt: ${p.capturedAt}`
       ]).join("\n");
     }
     // No hook: full context so the agent can still locate it.
+    // (No html blob: with repo access the agent reads structure from source.)
     return head.concat([
       `hook: none — consider adding data-ref`,
       `fullPath: ${t.fullPath}`,
@@ -238,7 +238,6 @@
       `styles: ${JSON.stringify(t.styles)}`,
       `rect: ${t.rect.x},${t.rect.y} ${t.rect.w}x${t.rect.h}`,
       `nearby: ${JSON.stringify(t.nearby)}`,
-      `html: ${t.html}`,
       `capturedAt: ${p.capturedAt}`
     ]).join("\n");
   }
