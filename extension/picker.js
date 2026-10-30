@@ -339,7 +339,7 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") clearPick();
     // Same hotkey as the extension command, for CDP-injected use (no extension).
-    if (e.altKey && e.shiftKey && (e.key === "E" || e.key === "e")) {
+    if (e.altKey && !e.ctrlKey && !e.metaKey && (e.key === "x" || e.key === "X")) {
       e.preventDefault();
       if (lockedEl) clearPick(); else setPicking(!picking);
     }

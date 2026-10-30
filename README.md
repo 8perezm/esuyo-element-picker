@@ -18,7 +18,7 @@ Start-Process "C:\Program Files\Google\Chrome\Application\chrome.exe" `
 node scripts/inject-picker.cjs --port 9222
 ```
 
-In the visible window: `Alt+Shift+E` toggles pick mode, click locks + copies,
+In the visible window: `Alt+X` toggles pick mode, click locks + copies,
 `Esc` clears. Then paste into the agent chat, e.g. "change it to 'Report for
 quarterly analysis'".
 

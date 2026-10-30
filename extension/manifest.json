@@ -32,7 +32,7 @@
   ],
   "commands": {
     "toggle-pick": {
-      "suggested_key": { "default": "Alt+Shift+E" },
+      "suggested_key": { "default": "Alt+X" },
       "description": "Toggle element pick mode (Esc clears)"
     }
   }

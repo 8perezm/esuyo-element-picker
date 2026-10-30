@@ -54,5 +54,5 @@ function cdp(wsUrl, method, params = {}) {
     });
     console.log(`OK ${p.url} ->`, check.result.value);
   }
-  console.log(`picker live in ${pages.length} page(s). Re-run after navigation. Hotkey: Alt+Shift+E, Esc clears.`);
+  console.log(`picker live in ${pages.length} page(s). Re-run after navigation. Hotkey: Alt+X, Esc clears.`);
 })().catch((e) => { console.error("FAIL:", e.message); process.exit(1); });

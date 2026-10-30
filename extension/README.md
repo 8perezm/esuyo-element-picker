@@ -29,7 +29,7 @@ node scripts/inject-picker.cjs --port 9222 [--url-filter example.com]
 node scripts/verify-picker.cjs --port 9222   # 12/12 on Chrome 156
 ```
 
-In the visible window: `Alt+Shift+E` toggles pick mode (no extension needed),
+In the visible window: `Alt+X` toggles pick mode (no extension needed),
 click locks + copies, `Esc` clears. Popup buttons (`extension/popup.html`)
 offer the same actions when loaded as an extension.
 
