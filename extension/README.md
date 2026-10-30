@@ -35,12 +35,12 @@ offer the same actions when loaded as an extension.
 
 ## Paste contracts (text-only, remote-safe)
 
-`@picked-element v3` — two-tier. Hooked (`data-ref`/`id`): lean — sanitized
-url, title, viewport + scroll, frame context, selector, tag + text,
-visible/enabled state, capped `html`, timestamp. Hookless: full context —
+`@picked-element v5` — two-tier. Element with a valued `data-ref`: lean —
+sanitized url, title, viewport + scroll, frame context, selector, tag + text,
+visible/enabled state, timestamp (no html blob). Anything else: full context —
 adds `hook: none` nudge, structural `fullPath`, ancestors, attrs (secrets
-redacted), style subset, viewport rect, nearby text. Secrets redacted, urls
-sanitized (query/hash stripped).
+redacted), style subset, viewport rect, nearby text, capped `html` (~4k).
+Secrets redacted, urls sanitized (query/hash stripped).
 
 `@retrofit-data-ref v1`: whole-page hook request — url, title, element
 counts, plus the rules (kebab, feature-scoped, unique; selection-only).

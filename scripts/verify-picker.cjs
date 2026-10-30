@@ -78,7 +78,7 @@ function check(name, cond, extra = "") {
   check("payload has ancestors", payload && payload.target.ancestors.length > 0);
   check("payload url is test page", payload && payload.page.url.includes("test-page.html"), payload && payload.page.url);
   const paste = await ev("window.__esuyoPicker.pasteText()");
-  check("paste text starts with marker", typeof paste === "string" && paste.startsWith("@picked-element v4"));
+  check("paste text starts with marker", typeof paste === "string" && paste.startsWith("@picked-element v5"));
   check("hooked paste has selector+state", paste.includes("selector:") && paste.includes("state:"));
   check("hooked paste has no html blob", !paste.includes("\nhtml:"));
   check("hooked paste drops fullPath", !paste.includes("fullPath:"));
@@ -102,7 +102,7 @@ function check(name, cond, extra = "") {
   check("hookless h1 reports no hook", payload2 && payload2.target.hook.has === false);
   const paste2 = await ev("window.__esuyoPicker.pasteText()");
   check("hookless paste keeps full context", paste2.includes("fullPath:") && paste2.includes("nearby:") && paste2.includes("hook: none"));
-  check("hookless paste has no html blob", !paste2.includes("\nhtml:"));
+  check("hookless paste keeps html blob", paste2.includes("\nhtml:"));
   check("hookless selector is structural", payload2 && !/data-ref|data-testid|#/.test(payload2.target.selector), payload2 && payload2.target.selector);
   for (const type of ["keyDown", "keyUp"]) {
     await s.call("Input.dispatchKeyEvent", { type, key: "Escape", code: "Escape", windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });

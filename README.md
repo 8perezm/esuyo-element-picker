@@ -24,9 +24,9 @@ quarterly analysis'".
 
 ## The paste
 
-`@picked-element v3` — two-tier: lean when the element has a `data-ref`
-(url, viewport, frame, selector, tag + text, state, HTML), full fallback
-context when hookless. Full field list in [`extension/README.md`](extension/README.md).
+`@picked-element v5` — two-tier: lean when the picked element carries a
+valued `data-ref` (no html blob), full fallback context otherwise. Full field
+list in [`extension/README.md`](extension/README.md).
 
 `@retrofit-data-ref v1 (whole page)` — whole-page prompt for the agent to add
 missing `data-ref` hooks (kebab, feature-scoped, selection-only). Available
